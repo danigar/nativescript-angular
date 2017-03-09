@@ -86,7 +86,10 @@ export class NativeScriptRenderer extends RendererV2 {
 
     appendChild(parent: any, newChild: NgView): void {
         traceLog(`NativeScriptRenderer.appendChild child: ${newChild} parent: ${parent}`);
-        this.viewUtil.insertChild(parent, newChild);
+
+        if (parent) {
+            this.viewUtil.insertChild(parent, newChild);
+        }
     }
 
     insertBefore(parent: NgView, newChild: NgView, refChildIndex: number): void {
@@ -197,7 +200,7 @@ export class NativeScriptRenderer extends RendererV2 {
         return this.viewUtil.createView(name);
     }
 
-    createText(_value: string): NgView {
+    createText(_value: string) {
         traceLog("NativeScriptRenderer.createText");
         return this.viewUtil.createText();
     }
