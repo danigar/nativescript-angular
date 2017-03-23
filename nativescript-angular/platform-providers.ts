@@ -4,6 +4,8 @@ import { OpaqueToken } from "@angular/core";
 import { device, Device } from "tns-core-modules/platform";
 import * as platform from "tns-core-modules/platform";
 
+import { NativeScriptPlatformRef } from "./platform-common";
+
 export const APP_ROOT_VIEW = new OpaqueToken("App Root View");
 export const DEVICE = new OpaqueToken("platfrom device");
 export const PAGE_FACTORY = new OpaqueToken("page factory");
@@ -15,14 +17,24 @@ if ((<any>global).___TS_UNUSED) {
     })();
 }
 
+let _rootPageRef: WeakRef<Page>;
+
+export function setRootPage(page: Page): void {
+    _rootPageRef = new WeakRef(page);
+}
+
+export function getRootPage(): Page {
+    return _rootPageRef && _rootPageRef.get();
+}
+
 // Use an exported function to make the AoT compiler happy.
 export function getDefaultPage(): Page {
-    const frame = topmost();
-    if (frame) {
-        return frame.currentPage;
-    } else {
-        return null;
+    if (NativeScriptPlatformRef.rootPage) {
+        return NativeScriptPlatformRef.rootPage;
     }
+
+    const frame = topmost();
+    return getRootPage() || (frame && frame.currentPage);
 }
 
 export const defaultPageProvider = { provide: Page, useFactory: getDefaultPage };
